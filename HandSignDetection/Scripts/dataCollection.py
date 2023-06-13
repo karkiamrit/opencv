@@ -2,54 +2,73 @@ import cv2
 from cvzone.HandTrackingModule import HandDetector
 import numpy as np
 import math
-
+import os
 import time
 
-cap=cv2.VideoCapture(1)
+# Set the current working directory
+os.chdir('opencv/HandSignDetection/Scripts')
+
+cap = cv2.VideoCapture(0)
 
 detector = HandDetector(maxHands=1)
 
 offset = 20
 imgSize = 400
 
-folder= "Data/B"
-counter=0
+folder = "Data/J"
+try:
+    os.makedirs(folder, exist_ok=True)  # Create the folder if it doesn't exist
+except Exception as e:
+    print(f"Error creating folder: {str(e)}")
+
+counter = 0
 while True:
-	success, img=cap.read()
-	hands,img = detector.findHands(img)
-	if hands:
-		hand=hands[0]
-		x,y,w,h = hand['bbox']
+    success, img = cap.read()
+    hands, img = detector.findHands(img)
+    
+    if hands:
+        hand = hands[0]
+        x, y, w, h = hand['bbox']
 
-		imgWhite=np.ones((imgSize,imgSize,3),np.uint8)*255
-		imgCrop = img [y-offset:y+h+offset,x-offset:x+w+offset]
-		
-		imgCropShape=imgCrop.shape
-		
-		aspectRatio=h/w
-		if aspectRatio>1:
-			k=imgSize/h
-			wCal= math.ceil(k*w)
-			imgResize=cv2.resize(imgCrop,(wCal,imgSize))
-			imgResizeShape=imgResize.shape
-			wGap=math.ceil((imgSize-wCal)/2)
-			imgWhite[:,wGap:wCal+wGap]=imgResize
+        imgCrop = img[y-offset:y+h+offset, x-offset:x+w+offset]
+        
+        imgCropShape = imgCrop.shape
+        
+        aspectRatio = h / w
+        if aspectRatio > 1:
+            k = imgSize / h
+            wCal = math.ceil(k * w)
+            imgResize = cv2.resize(imgCrop, (wCal, imgSize))
+            wGap = (imgSize - wCal) // 2
 
-		else:
-			k=imgSize/w
-			hCal= math.ceil(k*h)
-			imgResize=cv2.resize(imgCrop,(imgSize,hCal))
-			imgResizeShape=imgResize.shape
-			hGap=math.ceil((imgSize-hCal)/2)
-			imgWhite[hGap:hCal+hGap,:]=imgResize
-		
-		
-		cv2.imshow("Image Crop",imgCrop)
-		cv2.imshow("Image White",imgWhite)	 
-	cv2.imshow("Image",img)
-	cv2.waitKey(1)
-	key=cv2.waitKey(1)
-	if key == ord("s"):
-		counter+= 1 
-		cv2.imwrite(f'{folder}/Image_{time.time()}.jpg',imgWhite)
-		print(counter)
+            if wGap > 0:
+                imgResize = cv2.copyMakeBorder(imgResize, 0, 0, wGap, wGap, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+            elif wGap < 0:
+                imgResize = imgResize[:, -wGap:wCal + wGap]
+        else:
+            k = imgSize / w
+            hCal = math.ceil(k * h)
+            imgResize = cv2.resize(imgCrop, (imgSize, hCal))
+            hGap = (imgSize - hCal) // 2
+
+            if hGap > 0:
+                imgResize = cv2.copyMakeBorder(imgResize, hGap, hGap, 0, 0, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+            elif hGap < 0:
+                imgResize = imgResize[-hGap:hCal + hGap, :]
+        
+        cv2.imshow("Image Crop", imgCrop)
+        cv2.imshow("Image White", imgResize)
+        
+    cv2.imshow("Image", img)
+    key = cv2.waitKey(1)
+    
+    if key == ord("s"):
+        counter += 1 
+        cv2.imwrite(f'{folder}/Image_{time.time()}.jpg', imgCrop)
+        print(counter)
+        
+    if key == ord("q"):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
