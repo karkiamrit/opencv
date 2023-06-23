@@ -2,11 +2,8 @@ import cv2
 from cvzone.HandTrackingModule import HandDetector
 import numpy as np
 import math
-import os
 import time
 
-# Set the current working directory
-os.chdir('opencv/HandSignDetection/Scripts')
 
 cap = cv2.VideoCapture(0)
 
@@ -15,11 +12,7 @@ detector = HandDetector(maxHands=1)
 offset = 20
 imgSize = 400
 
-folder = "Data/J"
-try:
-    os.makedirs(folder, exist_ok=True)  # Create the folder if it doesn't exist
-except Exception as e:
-    print(f"Error creating folder: {str(e)}")
+folder = "Data/B"
 
 counter = 0
 while True:
