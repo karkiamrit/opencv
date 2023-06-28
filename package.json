@@ -17,6 +17,7 @@
     "nodemailer": "^6.9.3",
     "nodemon": "^2.0.22",
     "path": "^0.12.7",
+    "stripe": "^12.10.0",
     "validator": "^13.9.0"
   },
   "scripts": {

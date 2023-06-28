@@ -23,4 +23,4 @@ exports.authorizeRoles = (...roles) => {
         }
         next();
     }
-}
+};
