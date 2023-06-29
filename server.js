@@ -1,5 +1,4 @@
 const app=require('./app');
-const dotenv=require('dotenv');
 const connectDatabase=require('./config/database');
 
 process.on('uncaughtException',(err)=>{
@@ -8,7 +7,7 @@ process.on('uncaughtException',(err)=>{
     process.exit(1);
 });
 
-dotenv.config({path:'config/config.env'});
+
 connectDatabase();
 
 const server=app.listen(process.env.PORT,()=>{
