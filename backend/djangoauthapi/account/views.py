@@ -35,6 +35,7 @@ class UserRegisterationView(APIView):
         return Response({'token':token,'message': 'Registeration Success'},
                             status=status.HTTP_201_CREATED
                             )
+        
         # return Response(serializer.errors,
         #                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -54,13 +55,13 @@ class UserLoginView(APIView):
             response = JsonResponse({'message': 'Login Success'})
             response.set_cookie('access_token', token['access'], httponly=True)
             response.set_cookie('refresh_token', token['refresh'], httponly=True)
-            
             return response
         else:
             return Response({'errors': {'non_field_errors': ['Email or Password is not Valid']}},
                             status=status.HTTP_404_NOT_FOUND
                             )
-
+            
+            
         # return Response(serializer.errors,
         #                 status=status.HTTP_400_BAD_REQUEST)
 

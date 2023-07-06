@@ -1,36 +1,32 @@
-import { Container, VStack, Input, Heading, Button, Text } from '@chakra-ui/react'
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import axios from 'axios'
+import { Container, VStack, Input, Heading, Button, Text } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const Login = () => {
-  // State variables to hold form input values
+const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Create a data object with form input values
     const userData = {
       email: email,
       password: password,
     };
 
-    // Send a POST request to your Django backend API endpoint for user authentication
-    axios.post('/login/', userData)
+    axios
+      .post('/login/', userData)
       .then((response) => {
-        // Handle the response data, e.g., show a success message or redirect to a protected page
         console.log('Login successful');
-        // Show a success message
         alert('Login successful');
+        // Set isLoggedIn to true
+        setIsLoggedIn(true);
         // Redirect to a protected page
-        window.location.href = '/videos';
-
-        console.log(response.data);
+        navigate('/videos');
       })
       .catch((error) => {
-        // Handle errors, e.g., display an error message to the user
         console.error('Error:', error);
       });
   };
@@ -38,13 +34,7 @@ const Login = () => {
   return (
     <Container maxW={'container.xl'} h={'100vh'} p={'16'}>
       <form onSubmit={handleSubmit}>
-        <VStack
-          alignItems={'stretch'}
-          spacing={'8'}
-          w={['full', '96']}
-          m={'auto'}
-          my={'16'}
-        >
+        <VStack alignItems={'stretch'} spacing={'8'} w={['full', '96']} m={'auto'} my={'16'}>
           <Heading>Welcome Back</Heading>
           <Input
             placeholder={'Email'}
