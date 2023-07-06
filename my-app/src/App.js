@@ -10,24 +10,21 @@ import Login from './components/Login';
 import axios from 'axios';
 import Profile from './components/Profile';
 
-axios.defaults.baseURL = 'http://localhost:8000/api/user';
+axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.withCredentials = true;
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   useEffect(() => {
     // Check if the user is already logged in on page load
-    const access_token = getCookie('access_token');
+    const access_token=localStorage.getItem('access_token');
     if (access_token) {
       setIsLoggedIn(true);
     }
+    console.log(access_token)
   }, []);
 
-  const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  };
+ 
 
   return (
     <Router>

@@ -7,6 +7,7 @@ import axios from 'axios';
 const Header = ({ isLoggedIn }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleLogout = () => {
+    
     // Send a POST request to your Django backend API endpoint for user logout
     axios.post('/logout/')
       .then(() => {
@@ -20,9 +21,10 @@ const Header = ({ isLoggedIn }) => {
       .catch((error) => {
         // Handle errors, e.g., display an error message to the user
         console.error('Error:', error);
+        console.log('Error is:', error);
+
       });
   };
-console.log(isLoggedIn);
   return (
     <>
       <Button

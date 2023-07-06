@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import permissions
-
+import datetime
 
 
 from django.http import JsonResponse
@@ -52,10 +52,11 @@ class UserLoginView(APIView):
         
         if user is not None:
             token=get_tokens_for_user(user)
-            response = JsonResponse({'message': 'Login Success'})
-            response.set_cookie('access_token', token['access'], httponly=True)
-            response.set_cookie('refresh_token', token['refresh'], httponly=True)
+            response = JsonResponse({'message': 'Login Success','access_token': token['access']})
+            response.set_cookie('access_token', token['access'],  expires=datetime.datetime.now() + datetime.timedelta(days=7), httponly=True,samesite=None)
+            response.set_cookie('refresh_token', token['refresh'],  expires=datetime.datetime.now() + datetime.timedelta(days=30),httponly=True,samesite=None)
             return response
+            
         else:
             return Response({'errors': {'non_field_errors': ['Email or Password is not Valid']}},
                             status=status.HTTP_404_NOT_FOUND
@@ -116,13 +117,6 @@ class UserLogoutView(APIView):
         refresh_token = request.COOKIES.get('refresh_token')
 
         if refresh_token is not None:
-            # Delete the refresh token from the database or cache
-            # Alternatively, you can mark the token as expired in the database or cache
-            # Here, we assume you have a User model with a refresh_token field
-            user = request.user
-            user.refresh_token = None
-            user.save()
-
             # Clear the access and refresh token cookies
             response = Response({'message': 'Logout Successful'})
             response.delete_cookie('access_token')

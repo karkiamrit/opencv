@@ -11,7 +11,6 @@ const Signup = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
     const userData = {
       name: name,
       email: email,
@@ -21,7 +20,7 @@ const Signup = () => {
     };
 
     axios
-      .post('/register/', userData)
+      .post('/api/user/register/', userData)
       .then((response) => {
         console.log('Registration successful');
         alert('Registration successful');

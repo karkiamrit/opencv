@@ -8,7 +8,7 @@ const Profile = () => {
 
   useEffect(() => {
     // Fetch user data from the backend API
-    axios.get('/profile/')
+    axios.get('/api/user/profile/')
       .then((response) => {
         // Set the user data in the state
         setUser(response.data);
