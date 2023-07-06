@@ -3,10 +3,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({setIsLoggedIn}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -17,14 +16,14 @@ const Login = ({ setIsLoggedIn }) => {
     };
 
     axios
-      .post('/login/', userData)
+      .post('/api/user/login/', userData)
       .then((response) => {
         console.log('Login successful');
-        alert('Login successful');
-        // Set isLoggedIn to true
-        setIsLoggedIn(true);
-        // Redirect to a protected page
-        navigate('/videos');
+        const access_token=response.data.access_token;
+        localStorage.setItem('access_token', access_token);
+        if (access_token) {
+          setIsLoggedIn(true);
+        }
       })
       .catch((error) => {
         console.error('Error:', error);
