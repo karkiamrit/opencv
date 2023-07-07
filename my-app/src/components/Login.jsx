@@ -1,6 +1,6 @@
 import { Container, VStack, Input, Heading, Button, Text } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = ({setIsLoggedIn}) => {

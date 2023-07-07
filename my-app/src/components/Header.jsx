@@ -4,26 +4,15 @@ import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHea
 import { BiMenuAltLeft } from 'react-icons/bi';
 import axios from 'axios';
 
-const Header = ({ isLoggedIn }) => {
+const Header = ({ isLoggedIn,setIsLoggedIn }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const handleLogout = () => {
-    
-    // Send a POST request to your Django backend API endpoint for user logout
-    axios.post('/logout/')
-      .then(() => {
+  const handleLogout = (event) => {
+        event.preventDefault();
         // Handle the successful logout, e.g., show a success message or redirect to the login page
-        console.log('Logout successful');
-        // Show a success message
-        alert('Logout successful');
-        // Redirect to the login page
-        window.location.href = '/login';
-      })
-      .catch((error) => {
-        // Handle errors, e.g., display an error message to the user
-        console.error('Error:', error);
-        console.log('Error is:', error);
-
-      });
+        localStorage.removeItem('access_token');
+    // Update the isLoggedIn state or perform any other necessary actions
+        setIsLoggedIn(false);
+        
   };
   return (
     <>

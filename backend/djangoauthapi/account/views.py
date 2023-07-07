@@ -53,8 +53,8 @@ class UserLoginView(APIView):
         if user is not None:
             token=get_tokens_for_user(user)
             response = JsonResponse({'message': 'Login Success','access_token': token['access']})
-            response.set_cookie('access_token', token['access'],  expires=datetime.datetime.now() + datetime.timedelta(days=7), httponly=True,samesite=None)
-            response.set_cookie('refresh_token', token['refresh'],  expires=datetime.datetime.now() + datetime.timedelta(days=30),httponly=True,samesite=None)
+            # response.set_cookie('access_token', token['access'],  expires=datetime.datetime.now() + datetime.timedelta(days=7), httponly=True,samesite=None)
+            # response.set_cookie('refresh_token', token['refresh'],  expires=datetime.datetime.now() + datetime.timedelta(days=30),httponly=True,samesite=None)
             return response
             
         else:
@@ -112,21 +112,21 @@ class UserProfileUpdateView(APIView):
         serializer =UserProfileSerializer(request.user)
         return Response(serializer.data,status=status.HTTP_200_OK)
         
-class UserLogoutView(APIView):
-    def post(self, request, format=None):
-        refresh_token = request.COOKIES.get('refresh_token')
+# class UserLogoutView(APIView):
+#     def post(self, request, format=None):
+#         refresh_token = request.COOKIES.get('refresh_token')
+#         print(refresh_token)
+#         if refresh_token is not None:
+#             # Clear the access and refresh token cookies
+#             response = Response({'message': 'Logout Successful'})
+#             # response.delete_cookie('access_token')
+#             # response.delete_cookie('refresh_token')
+#             return response
+#         else:
+#             return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if refresh_token is not None:
-            # Clear the access and refresh token cookies
-            response = Response({'message': 'Logout Successful'})
-            response.delete_cookie('access_token')
-            response.delete_cookie('refresh_token')
-            return response
-        else:
-            return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-
-# Apply the CSRF exemption to the logout view
-@method_decorator(csrf_exempt, name='dispatch')
-class UserLogoutViewCSRFExempt(UserLogoutView):
-    pass
+# # Apply the CSRF exemption to the logout view
+# @method_decorator(csrf_exempt, name='dispatch')
+# class UserLogoutViewCSRFExempt(UserLogoutView):
+#     pass
