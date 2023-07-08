@@ -7,8 +7,11 @@ import Videos from './components/Videos';
 import Upload from './components/Upload';
 import Signup from './components/Signup';
 import Login from './components/Login';
+import ForgetPassword from './components/forgetPassword';
 import axios from 'axios';
 import Profile from './components/Profile';
+import ChangePassword from './components/changePassword';
+import ResetPassword from './components/resetPassword';
 
 axios.defaults.baseURL = 'http://localhost:8000';
 axios.defaults.withCredentials = true;
@@ -21,7 +24,6 @@ function App() {
     if (access_token) {
       setIsLoggedIn(true);
     }
-    console.log(access_token)
   }, []);
 
  
@@ -32,13 +34,16 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/videos" element={<Videos />} />
-        <Route path="/upload" element={<Upload />} />
+        <Route path="/profile" element={<Profile />} />
         <Route
           path="/login"
           element={<Login setIsLoggedIn={setIsLoggedIn} />}
         />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/changepassword" element={<ChangePassword />} />
+        <Route path="/forgetpassword" element={<ForgetPassword />} />
+        <Route path="/reset/:uid/:token" element={<ResetPassword />} />
       </Routes>
       <Footer />
     </Router>

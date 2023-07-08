@@ -90,9 +90,9 @@ class UserSendPasswordResetEmailSerializer(serializers.Serializer):
             user = User.objects.get(email=email)
             uid = urlsafe_base64_encode(force_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
-            link = 'http://localhost:3000/api/user/reset/'+uid+'/'+token
+            link = 'http://localhost:3000/reset/'+uid+'/'+token
             #Send Email
-            body= 'Click Following Link to Reset your password'+link
+            body= 'Click Following Link to Reset your password'+" "+link
             data={
                 'email_subject':'Reset your password',
                 'body':body,
@@ -136,4 +136,11 @@ class UserPasswordResetSerializer(serializers.Serializer):
             PasswordResetTokenGenerator().check_token(user,token)
             raise ValidationError(
                     'Token is not Valid or Expired')
+            
+            
+            
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['name', 'email']
             

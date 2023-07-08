@@ -36,7 +36,7 @@ const Signup = () => {
     <Container maxW={'container.xl'} h={'100vh'} p={'16'}>
       <form onSubmit={handleSubmit}>
         <VStack alignItems={'stretch'} spacing={'8'} w={['full', '96']} m={'auto'} my={'16'}>
-          <Heading textAlign={'center'}>VIDEO LIBRARY</Heading>
+          <Heading textAlign={'center'}>SIGN UP</Heading>
           <Input
             placeholder={'Name'}
             type={'text'}

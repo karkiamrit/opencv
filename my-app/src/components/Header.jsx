@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, HStack, useDisclosure, VStack } from '@chakra-ui/react';
 import { BiMenuAltLeft } from 'react-icons/bi';
-import axios from 'axios';
+// import axios from 'axios';
 
 const Header = ({ isLoggedIn,setIsLoggedIn }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,10 +46,12 @@ const Header = ({ isLoggedIn,setIsLoggedIn }) => {
               <Button onClick={onClose} variant="ghost" colorScheme="purple">
                 <Link to="/videos?category=free">Free Videos</Link>
               </Button>
-              <Button onClick={onClose} variant="ghost" colorScheme="purple">
-                <Link to="/upload">Upload Video</Link>
-              </Button>
+
+              {isLoggedIn ? (<Button onClick={onClose} variant="ghost" colorScheme="purple">
+                <Link to="/profile">Profile</Link>
+              </Button>):('')}
             </VStack>
+
             <HStack pos="absolute" bottom="10" left="0" w="full" justifyContent="space-evenly">
               {isLoggedIn ? (
                 <Button colorScheme="purple" onClick={handleLogout}>

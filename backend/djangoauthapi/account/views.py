@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from account.serializers import UserRegisterationSerializer, UserLoginSerializer, UserProfileSerializer, UserChangePasswordSerializer, UserSendPasswordResetEmailSerializer, UserPasswordResetSerializer
+from account.serializers import UserRegisterationSerializer, UserLoginSerializer, UserProfileSerializer, UserChangePasswordSerializer, UserSendPasswordResetEmailSerializer, UserPasswordResetSerializer, UserProfileUpdateSerializer
 from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -68,11 +68,15 @@ class UserLoginView(APIView):
 
 
 class UserProfileView(APIView):
-    renderer_classes= [UserRenderer]
+    renderer_classes = [UserRenderer]
     permission_classes = [permissions.IsAuthenticated]
-    def get(self,request,format=None):
-        serializer =UserProfileSerializer(request.user)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    def get(self, request, format=None):
+        if not request.user.is_authenticated:
+            return Response({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     
 class UserChangePasswordView(APIView):
@@ -102,15 +106,22 @@ class UserPasswordResetView(APIView):
         serializers.is_valid(raise_exception=True)
         return Response({'message':'Password Reset Successfully'},
                             status=status.HTTP_200_OK)
-        # return Response(serializers.errors,
-        #                     status=status.HTTP_400_BAD_REQUEST)  
         
 class UserProfileUpdateView(APIView):
-    renderer_classes= [UserRenderer]
+    renderer_classes = [UserRenderer]
     permission_classes = [permissions.IsAuthenticated]
-    def get(self,request,format=None):
-        serializer =UserProfileSerializer(request.user)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+
+    def get(self, request, format=None):
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, format=None):
+        serializer = UserProfileUpdateSerializer(request.user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'Profile updated successfully.'}, status=status.HTTP_200_OK)
+    
+    
         
 # class UserLogoutView(APIView):
 #     def post(self, request, format=None):
