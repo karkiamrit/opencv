@@ -30,9 +30,18 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,9 +49,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'account',
+    'signlanguage',
     'rest_framework',
     'rest_framework_simplejwt',
-    'corsheaders',
+    
 ]
 
 MIDDLEWARE = [
@@ -186,7 +196,8 @@ PASSWORD_RESET_TIMEOUT=900 #900 sec =15 Min
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "http://192.168.1.67:3000"
 ]
 
 SESSION_COOKIE_SECURE = False
@@ -203,3 +214,11 @@ CORS_ALLOW_METHODS = [
     'DELETE',
     'OPTIONS',  # Add the OPTIONS method
 ]
+
+# Configure ASGI_APPLICATION
+ASGI_APPLICATION = 'djangoauthapi.routing.application'
+
+from corsheaders.defaults import default_headers
+CHANNELS_WS_PROTOCOLS = ["http", "https"]  # Add the protocols for WebSocket connections
+CORS_ALLOW_ALL_ORIGINS = True  # Allow WebSocket connections from all origins
+CORS_ALLOW_HEADERS = list(default_headers)  # Allow default headers

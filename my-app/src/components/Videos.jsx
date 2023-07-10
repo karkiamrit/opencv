@@ -1,63 +1,83 @@
-import { Stack, VStack, Text, Button, Heading, Box, useBreakpointValue } from '@chakra-ui/react';
-import React from 'react';
-import { useState } from 'react';
-import ReactPlayer from 'react-player';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Container, VStack, Box, Input } from '@chakra-ui/react';
 
-const Videos = () => {
-  const videosArr = [
-    'https://www.youtube.com/watch?v=zoUagacsu9s&ab_channel=AnuvJain-Topic',
-    'https://www.youtube.com/watch?v=Fw-S8NCDsTY&ab_channel=RaghavKaushik',
-    'https://www.youtube.com/watch?v=miXdVbIm5BY&ab_channel=PrateekKuhad',
-    'https://www.youtube.com/watch?v=iOIF74Hk80A&ab_channel=PrateekKuhad',
-    'https://www.youtube.com/watch?v=o2hbckOhAf4&ab_channel=GhostKidGamerez',
-  ];
-  const [videoSrc, setVideoSrc] = useState(videosArr[0]);
-  const showMargin = useBreakpointValue({ base: false, md: true });
+const Video = () => {
+  const videoRef = useRef(null);
+  const outputRef = useRef(null);
+  const [outputMessage, setOutputMessage] = useState('');
+
+  const handleDetect = () => {
+    const videoElement = videoRef.current;
+    const outputElement = outputRef.current;
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((stream) => {
+        videoElement.srcObject = stream;
+        const mediaRecorder = new MediaRecorder(stream);
+        const socket = new WebSocket('ws://localhost:8000/ws/detection/');
+
+        mediaRecorder.addEventListener('dataavailable', (event) => {
+          if (event.data.size > 0) {
+            socket.send(event.data);
+          }
+        });
+
+        mediaRecorder.addEventListener('stop', () => {
+          socket.close();
+        });
+
+        mediaRecorder.start();
+
+        const stopButton = document.getElementById('stopButton');
+        stopButton.addEventListener('click', () => {
+          mediaRecorder.stop();
+          stream.getTracks().forEach((track) => track.stop());
+        });
+
+        socket.addEventListener('message', (event) => {
+          const response = JSON.parse(event.data);
+          setOutputMessage(response.message);
+          console.log(response.message);
+        });
+      })
+      .catch((error) => {
+        console.error('Error accessing camera:', error);
+      });
+  };
+
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    videoElement.style.display = 'block'; // Show the video element
+  }, []);
 
   return (
-    <Stack direction={['column', 'row']} h={['auto', '100vh']}>
-      <VStack
-        w={['full', 'full', 'full', '1500px']}
-        alignItems={['center', 'flex-start']}
-        margin={showMargin ? '8' : '0'}
-      >
-        <Box
-          w={['full', 'full', 'full', '100%']}
-          h={['250px', '450px', '650px']}
-        >
-          <ReactPlayer
-            controls
-            url={videoSrc}
-            width="100%"
-            height="100%"
-            playing={true}
-          />
-        </Box>
-        <VStack alignItems={['center', 'flex-start']} p={'8'} w={'full'} overflowY={'auto'}>
-          <Heading>Sample Video 1</Heading>
-          <Text>This is a sample video.</Text>
-        </VStack>
-      </VStack>
-      <VStack
-        w={['full', 'xl']}
-        alignItems={['center', 'stretch']}
-        p={['4', '8']}
-        spacing={['4', '8']}
-        overflowY={'auto'}
-      >
-        {videosArr.map((item, index) => (
-          <Button
-            key={index}
-            variant={'ghost'}
-            colorScheme={'purple'}
-            onClick={() => setVideoSrc(item)}
+    <Container maxW="container.xl" h="100vh" p="16">
+      <VStack alignItems="stretch" spacing="8" w={['full', '96']} m="auto" my="16">
+        <Box position="relative" w="100%" h="auto">
+          <video ref={videoRef} id="videoElement" playsInline autoPlay></video>
+          <Box
+            position="absolute"
+            top="50%"
+            left="50%"
+            transform="translate(-50%, -50%)"
+            fontWeight="bold"
+            fontSize="2xl"
+            color="purple.500"
+            ref={outputRef}
           >
-            Song {index + 1}
-          </Button>
-        ))}
+            {outputMessage}
+          </Box>
+        </Box>
+        <Input value={outputMessage} isReadOnly />
+        <Button colorScheme="purple" onClick={handleDetect}>
+          Detect
+        </Button>
+        <Button colorScheme="red" id="stopButton">
+          Stop
+        </Button>
       </VStack>
-    </Stack>
+    </Container>
   );
 };
 
-export default Videos;
+export default Video;

@@ -1,16 +1,32 @@
-"""
-ASGI config for djangoauthapi project.
+# import os
+# from django.core.asgi import get_asgi_application
+# from django.urls import path
+# from channels.routing import ProtocolTypeRouter, URLRouter
+# from signlanguage.consumers import SignLanguageConsumer
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'djangoauthapi.settings')
 
-For more information on this file, see
-https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
-"""
+# application = ProtocolTypeRouter(
+#    {
+#        'websocket': URLRouter([
+           
+#            path('api/sign/detection/', SignLanguageConsumer.as_asgi()),
+#        ]),
+#    }
+# )
 
 import os
 
 from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+from signlanguage.routing import websocket_urlpatterns
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'djangoauthapi.settings')
-
-application = get_asgi_application()
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": URLRouter(websocket_urlpatterns),
+    }
+)
