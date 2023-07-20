@@ -4,12 +4,13 @@ const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 const crypto=require('crypto'); //crypto for password encryption
 
+
 const userSchema=new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please Enter Your Name"],
     maxLength: [30, "Name should not exceed 30 characters"],
-    minLength: [4, "Name should be more than 4 characters"]
+    minLength: [2, "Name should be more than 2 characters"]
 },
 email: {
     type: String,
@@ -23,19 +24,16 @@ password: {
     select: false, //find() method call garda password dekhaudeina aba both to user and admin
     minLength: [8, "Password should be more than 8 characters"]
 },
-avatar: {
-    public_id: {
-        type: String,
-        required: true
-    },
-    url: {
-        type: String,
-        required: true
-    }
-},
 role: {
     type: String,
     default: "user"
+},
+otp: {
+  type: String
+},
+isActivated: {
+  type: Boolean,
+  default: false,
 },
 resetPasswordToken: String,
 resetPasswordExpire: Date,
