@@ -53,6 +53,11 @@ app.post('/create-checkout-session', async (req, res) => {
 const users=require('./routes/userRoute');
 app.use('/api/v1',users);
 
+const gesture=require('./routes/gestureRoute');
+app.use('/api/v1',gesture);
+
+
+
 function getPriceIdFromItemId(itemId) {
     // Implement your logic here to retrieve the Price ID associated with the item ID
     // This can involve querying a database or using a mapping of item IDs to Price IDs

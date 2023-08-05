@@ -43,4 +43,5 @@ router.route('/is-admin').get(isAdmin);
 router.route('/register').post(registerUserAndSendOTP);
 router.route('/verify-otp').post(verifyOTPAndActivateAccount);
 
+
 module.exports = router;

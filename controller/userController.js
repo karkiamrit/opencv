@@ -402,14 +402,13 @@ exports.isAdmin=catchAsyncError(async (req, res) => {
         // Verify the token and extract the necessary information
         const decoded = jwt.verify(token, process.env.JWT_PRIVATE);
 
-        const role = decoded.role;
-        
+        const user = await User.findById(decoded.id);
         // Perform any additional checks or validations if needed
-  
+        
         // User is authenticated
         return res.status(200).json({
           success: true,
-          role: role,
+          role: user.role,
         });
       } catch (error) {
         // Token verification failed, indicating that the user is not authenticated
