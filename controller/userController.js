@@ -292,7 +292,6 @@ exports.updateProfile=catchAsyncError(async(req,res,next)=>{
         name:req.body.name,
         email:req.body.email,
     };
-    //we will add cloudinary later(avatar)
     const user =await User.findByIdAndUpdate(req.user.id,newUserData,{
         new:true,
         runValidators:true,

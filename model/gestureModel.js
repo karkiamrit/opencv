@@ -12,6 +12,12 @@ const gestureDataSchema = new mongoose.Schema({
       type: Date,
       default: Date.now,
     },
+    facilitator:{
+      type:String,
+      required:true,
+
+    },
+
     photoDataURL: {
       type: String, // Store the base64-encoded image data
       required: true,

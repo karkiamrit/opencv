@@ -30,11 +30,12 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const Gesture = require('../model/gestureModel');
+const mongoose = require('mongoose');
 
 // Configure multer to store uploaded files in a specific directory
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/images/'); // Change 'uploads/' to your desired directory path
+    cb(null, '../my-app/public/images'); // Change 'uploads/' to your desired directory path
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' + file.originalname);
@@ -55,7 +56,7 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // POST route to store gesture data with username, gestures, and image data
 router.post('/storegesture', upload.single('photo'), async (req, res) => {
-  const { userName, gestures } = req.body;
+  const { userName, gestures, facilitator } = req.body;
   const photoFile = req.file;
 
   if (!userName || !gestures || gestures.length === 0 || !photoFile) {
@@ -66,7 +67,8 @@ router.post('/storegesture', upload.single('photo'), async (req, res) => {
     const gestureData = new Gesture({
       userName: userName,
       gestures: JSON.parse(gestures), // Convert the gestures back to an array
-      photoDataURL: photoFile.path, // Save the file path of the uploaded image
+      facilitator: facilitator,
+      photoDataURL: photoFile.path.replace('..\\my-app\\public', ''), // Save the file path of the uploaded image
     });
 
     await gestureData.save();
@@ -75,6 +77,75 @@ router.post('/storegesture', upload.single('photo'), async (req, res) => {
     console.error('Error storing gestures and photo data:', error);
     return res.status(500).json({ success: false, message: 'Error storing gestures and photo data' });
   }
+});
+
+router.get('/admin/gestures', async (req, res) => {
+  const gestures = await Gesture.find();
+
+  res.status(200).json({
+    success: true,
+    gestures,
+
+
+  });
+})
+
+router.put('/admin/gesture/:id', async (req, res, next) => {
+  const newGestureData = {
+    userName: req.body.userName,
+    gestures: req.body.gestures
+  };
+  const gesture = await Gesture.findByIdAndUpdate(req.params.id, newGestureData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  if (!gesture) {
+    return next(new ErrorHandler(`Gesture doesn't exist with ID: ${req.params.id}`));
+  }
+  res.status(200).json({
+    success: true,
+  });
+});
+
+router.delete('/admin/gesture/:id', async (req, res, next) => {
+  const gesture=await Gesture.findById(req.params.id);
+
+  if(!gesture)
+  {
+      return next(new ErrorHandler(`Gesture doesn't exist with ID: ${req.params.id}`));
+  }
+
+  await gesture.deleteOne();
+  res.status(200).json({
+      success:true,
+      message:"Gesture deleted Successfully"
+  });
+});
+
+
+router.get('/admin/gesture/:identifier', async (req, res) => {
+  const identifier = req.params.identifier;
+
+  let gesture;
+  if (mongoose.isValidObjectId(identifier)) {
+    // If the identifier is a valid ObjectId, search by id
+    gesturedata = await Gesture.findById(identifier);
+    gesture = [gesturedata]
+
+  } else {
+    // Otherwise, search by username
+    gesture = await Gesture.find({ userName: identifier });
+  }
+
+  if (!gesture) {
+    return res.status(404).json({ success: false, message: 'Gesture not found' });
+  }
+
+  res.status(200).json({
+    success: true,
+    gesture,
+  });
 });
 
 module.exports = router;

@@ -54,7 +54,7 @@ const users=require('./routes/userRoute');
 app.use('/api/v1',users);
 
 const gesture=require('./routes/gestureRoute');
-app.use('/api/v1',gesture);
+app.use('/api/v2',gesture);
 
 
 
